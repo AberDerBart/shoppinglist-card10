@@ -15,6 +15,12 @@ class SList:
 
     def removeItem(self, index):
         self.items.pop(index)
+        self.write()
+
+    def write(self):
+        slFile = open(self.fileName, 'w')
+        ujson.dump(self.data, slFile)
+        slFile.close()
 
 class Ui:
     offset = 0
@@ -26,7 +32,6 @@ class Ui:
     disp = display.open()
 
 def updateDisplay(slist):
-    
     # adjust offset
     if Ui.highlight < Ui.offset:
         Ui.offset = Ui.highlight
