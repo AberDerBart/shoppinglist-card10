@@ -44,7 +44,8 @@ def updateDisplay(slist):
     if slist.items:
         for row, item in enumerate(slist.items[Ui.offset:4+Ui.offset]):
             if row + Ui.offset == Ui.highlight:
-                Ui.disp.print(item['name'], posy=20*row, fg=(0,0,0), bg=(255,255,255))
+                itemString = item['name'] + ' ' * (12 - len(item['name']))
+                Ui.disp.print(itemString, posy=20*row, fg=(0,0,0), bg=(255,255,255))
             else:
                 Ui.disp.print(item['name'], posy=20*row)
     else:
