@@ -41,11 +41,14 @@ def updateDisplay(slist):
     # display list
     Ui.disp.clear()
 
-    for row, item in enumerate(slist.items[Ui.offset:4+Ui.offset]):
-        if row + Ui.offset == Ui.highlight:
-            Ui.disp.print(item['name'], posy=20*row, fg=(0,0,0), bg=(255,255,255))
-        else:
-            Ui.disp.print(item['name'], posy=20*row)
+    if slist.items:
+        for row, item in enumerate(slist.items[Ui.offset:4+Ui.offset]):
+            if row + Ui.offset == Ui.highlight:
+                Ui.disp.print(item['name'], posy=20*row, fg=(0,0,0), bg=(255,255,255))
+            else:
+                Ui.disp.print(item['name'], posy=20*row)
+    else:
+        Ui.disp.print('(EMPTY)', posy=30, posx=30)
 
     Ui.disp.update()
 
