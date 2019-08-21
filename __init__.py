@@ -6,19 +6,21 @@ import buttons
 slFile = open('shoppinglist.json')
 data = ujson.load(slFile)
 disp = display.open()
-offset = 0
-highlight = 0
 
-pressed = buttons.read(buttons.BOTTOM_LEFT | buttons.BOTTOM_RIGHT)
-lastPressed = buttons.read(buttons.BOTTOM_LEFT | buttons.BOTTOM_RIGHT)
 
 items = data['currentState']['items']
+
+class Ui:
+    offset = 0
+    highlight = 0
+    pressed = buttons.read(buttons.BOTTOM_LEFT | buttons.BOTTOM_RIGHT)
+    lastPressed = pressed
 
 def updateDisplay():
     disp.clear()
 
-    for row, item in enumerate(items[offset:4+offset]):
-        if row + offset == highlight:
+    for row, item in enumerate(items[Ui.offset:4+Ui.offset]):
+        if row + Ui.offset == Ui.highlight:
             disp.print(item['name'], posy=20*row, fg=(0,0,0), bg=(255,255,255))
         else:
             disp.print(item['name'], posy=20*row)
@@ -26,32 +28,24 @@ def updateDisplay():
     disp.update()
 
 def risingFlank(button):
-    global pressed
-    global lastPressed
-    return pressed & button and not lastPressed & button
+    return Ui.pressed & button and not Ui.lastPressed & button
 
 def updateButtons():
-    global highlight
-    global offset
-    global pressed
-    global lastPressed
-    lastPressed = pressed
-    pressed = buttons.read(buttons.BOTTOM_LEFT | buttons.BOTTOM_RIGHT)
+    Ui.lastPressed = Ui.pressed
+    Ui.pressed = buttons.read(buttons.BOTTOM_LEFT | buttons.BOTTOM_RIGHT)
 
     if risingFlank(buttons.BOTTOM_LEFT):
-        print('left')
-        highlight -= 1
-        if highlight < 0:
-            highlight = 0
-        if highlight < offset:
-            offset = highlight
+        Ui.highlight -= 1
+        if Ui.highlight < 0:
+            Ui.highlight = 0
+        if Ui.highlight < Ui.offset:
+            Ui.offset = Ui.highlight
     if risingFlank(buttons.BOTTOM_RIGHT):
-        print('right')
-        highlight += 1
-        if highlight >= len(items):
-            highlight = len(items) - 1
-        if highlight - offset > 3:
-            offset = highlight - 3
+        Ui.highlight += 1
+        if Ui.highlight >= len(items):
+            Ui.highlight = len(items) - 1
+        if Ui.highlight - Ui.offset > 3:
+            Ui.offset = Ui.highlight - 3
 
 def mainLoop():
     while(True):
