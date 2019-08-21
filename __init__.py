@@ -3,12 +3,15 @@ import ujson
 import display
 import buttons
 
-slFile = open('shoppinglist.json')
-data = ujson.load(slFile)
-disp = display.open()
 
+class SList:
+    def __init__(self, fileName):
+        self.fileName = fileName
+        slFile = open(fileName)
+        self.data = ujson.load(slFile)
+        slFile.close()
 
-items = data['currentState']['items']
+        self.items = self.data['currentState']['items']
 
 class Ui:
     offset = 0
@@ -16,21 +19,23 @@ class Ui:
     pressed = buttons.read(buttons.BOTTOM_LEFT | buttons.BOTTOM_RIGHT)
     lastPressed = pressed
 
-def updateDisplay():
-    disp.clear()
+    disp = display.open()
 
-    for row, item in enumerate(items[Ui.offset:4+Ui.offset]):
+def updateDisplay(slist):
+    Ui.disp.clear()
+
+    for row, item in enumerate(slist.items[Ui.offset:4+Ui.offset]):
         if row + Ui.offset == Ui.highlight:
-            disp.print(item['name'], posy=20*row, fg=(0,0,0), bg=(255,255,255))
+            Ui.disp.print(item['name'], posy=20*row, fg=(0,0,0), bg=(255,255,255))
         else:
-            disp.print(item['name'], posy=20*row)
+            Ui.disp.print(item['name'], posy=20*row)
 
-    disp.update()
+    Ui.disp.update()
 
 def risingFlank(button):
     return Ui.pressed & button and not Ui.lastPressed & button
 
-def updateButtons():
+def updateButtons(slist):
     Ui.lastPressed = Ui.pressed
     Ui.pressed = buttons.read(buttons.BOTTOM_LEFT | buttons.BOTTOM_RIGHT)
 
@@ -42,15 +47,17 @@ def updateButtons():
             Ui.offset = Ui.highlight
     if risingFlank(buttons.BOTTOM_RIGHT):
         Ui.highlight += 1
-        if Ui.highlight >= len(items):
-            Ui.highlight = len(items) - 1
+        if Ui.highlight >= len(slist.items):
+            Ui.highlight = len(slist.items) - 1
         if Ui.highlight - Ui.offset > 3:
             Ui.offset = Ui.highlight - 3
 
+slist = SList('shoppinglist.json')
+
 def mainLoop():
     while(True):
-        updateDisplay()
-        updateButtons()
+        updateDisplay(slist)
+        updateButtons(slist)
         utime.sleep_ms(50)
 
 mainLoop()
