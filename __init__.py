@@ -42,6 +42,7 @@ class SList:
         index, item, color = self.deleted.pop()
         self.items.insert(index, item)
         self.colors.insert(index, color)
+        self.write()
         return index
 
 class Ui:
