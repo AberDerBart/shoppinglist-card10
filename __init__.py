@@ -68,7 +68,7 @@ def updateDisplay(slist):
             color = slist.colors[row+Ui.offset]
             Ui.disp.rect(0, row * 20, 6, (row + 1) * 20, col=color)
             if row + Ui.offset == Ui.highlight:
-                itemString = item['name'] + ' ' * (12 - len(item['name']))
+                itemString = item['name'] + ' ' * (11 - len(item['name']))
                 Ui.disp.print(itemString, posy=20*row, posx=6, fg=(0,0,0),
                   bg=(255,255,255))
             else:
