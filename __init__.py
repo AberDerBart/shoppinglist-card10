@@ -55,10 +55,10 @@ class Ui:
 
 def updateDisplay(slist):
     # adjust offset
-    if Ui.highlight < Ui.offset:
-        Ui.offset = Ui.highlight
     if Ui.highlight - Ui.offset > 3:
         Ui.offset = Ui.highlight - 3
+    if Ui.highlight < Ui.offset:
+        Ui.offset = Ui.highlight
 
     # display list
     Ui.disp.clear()
@@ -99,11 +99,11 @@ def updateButtons(slist):
         else:
             Ui.highlight += 1
             if Ui.highlight >= len(slist.items):
-                Ui.highlight = len(slist.items) - 1
+                Ui.highlight = max(len(slist.items) - 1, 0)
     if risingFlank(buttons.TOP_RIGHT) and len(slist.items):
         slist.removeItem(Ui.highlight)
         if Ui.highlight >= len(slist.items):
-            Ui.highlight = len(slist.items) - 1
+            Ui.highlight = max(0, len(slist.items) - 1)
 
 
 def mainLoop(slist):
