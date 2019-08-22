@@ -54,6 +54,16 @@ class Ui:
 
     disp = display.open()
 
+def fixString(string):
+    string = string.replace('ä','ae')
+    string = string.replace('Ä','Ae')
+    string = string.replace('ö','oe')
+    string = string.replace('Ö','Oe')
+    string = string.replace('ü','ue')
+    string = string.replace('Ü','Ue')
+    string = string.replace('ß','ss')
+    return string
+
 def updateDisplay(slist):
     # adjust offset
     if Ui.highlight - Ui.offset > 3:
@@ -68,12 +78,12 @@ def updateDisplay(slist):
         for row, item in enumerate(slist.items[Ui.offset:4+Ui.offset]):
             color = slist.colors[row+Ui.offset]
             Ui.disp.rect(0, row * 20, 6, (row + 1) * 20, col=color)
+            itemString = fixString(item['name']) + ' ' * (11 - len(item['name']))
             if row + Ui.offset == Ui.highlight:
-                itemString = item['name'] + ' ' * (11 - len(item['name']))
                 Ui.disp.print(itemString, posy=20*row, posx=6, fg=(0,0,0),
                   bg=(255,255,255))
             else:
-                Ui.disp.print(item['name'], posy=20*row, posx=6)
+                Ui.disp.print(itemString, posy=20*row, posx=6)
     else:
         Ui.disp.print('(EMPTY)', posy=30, posx=30)
 
