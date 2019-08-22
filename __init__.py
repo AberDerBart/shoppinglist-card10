@@ -25,15 +25,24 @@ class SList:
             b = int(colorString[5:7], 16)
             self.colors.append((r, g, b))
 
+        self.deleted = []
+
     def removeItem(self, index):
-        self.items.pop(index)
-        self.colors.pop(index)
+        item = self.items.pop(index)
+        color = self.colors.pop(index)
+        self.deleted.append((index, item, color))
         self.write()
 
     def write(self):
         slFile = open(self.fileName, 'w')
         ujson.dump(self.data, slFile)
         slFile.close()
+
+    def undo(self):
+        index, item, color = self.deleted.pop()
+        self.items.insert(index, item)
+        self.colors.insert(index, color)
+        return index
 
 class Ui:
     offset = 0
@@ -78,13 +87,19 @@ def updateButtons(slist):
       buttons.TOP_RIGHT)
 
     if risingFlank(buttons.BOTTOM_LEFT):
-        Ui.highlight -= 1
-        if Ui.highlight < 0:
-            Ui.highlight = 0
+        if Ui.pressed & buttons.BOTTOM_RIGHT and slist.deleted:
+            Ui.highlight = slist.undo()
+        else:
+            Ui.highlight -= 1
+            if Ui.highlight < 0:
+                Ui.highlight = 0
     if risingFlank(buttons.BOTTOM_RIGHT):
-        Ui.highlight += 1
-        if Ui.highlight >= len(slist.items):
-            Ui.highlight = len(slist.items) - 1
+        if Ui.pressed & buttons.BOTTOM_LEFT and slist.deleted:
+            Ui.highlight = slist.undo()
+        else:
+            Ui.highlight += 1
+            if Ui.highlight >= len(slist.items):
+                Ui.highlight = len(slist.items) - 1
     if risingFlank(buttons.TOP_RIGHT) and len(slist.items):
         slist.removeItem(Ui.highlight)
         if Ui.highlight >= len(slist.items):
